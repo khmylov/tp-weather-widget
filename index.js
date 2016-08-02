@@ -1,16 +1,10 @@
 tau.mashups
     .addDependency('jQuery')
     .addDependency('react')
-    .addDependency("tau/configurator")
+    .addDependency('tau/configurator')
     .addMashup(function($, React, configurator) {
-        function makeCb(cb) {
-            return function() {
-                cb.apply(null, _.rest(_.toArray(arguments)));
-            };
-        };
-
         var D = React.DOM;
-        
+
         var WeatherWidget = React.createClass({
             getInitialState: function() {
                 return {
@@ -20,15 +14,15 @@ tau.mashups
                     text: null
                 };
             },
-            
+
             getDefaultProps: function() {
                 return {
                     location: 'Minsk'
                 };
             },
-            
+
             componentDidMount: function() {
-                $.ajax("https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22" + this.props.location + "%22)and%20u=%27c%27&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys")
+                $.ajax('https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22' + this.props.location + '%22)and%20u=%27c%27&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys')
                 .then(function(response) {
                     var query = response.query;
                     console.log(query);
@@ -49,23 +43,23 @@ tau.mashups
                 return (
                     D.div({
                         style:{
-                            backgroundColor: '#F1EED9', 
-                            padding: '20px', 
-                            color: '#2E221F', 
-                            fontFamily: 'OpenSans', 
-                            minHeight: '180px', 
-                            textAlign: 'center', 
+                            backgroundColor: '#F1EED9',
+                            padding: '20px',
+                            color: '#2E221F',
+                            fontFamily: 'OpenSans',
+                            minHeight: '180px',
+                            textAlign: 'center',
                             fontSize: '24px'
                         }
                     },
                     this.renderContent()));
             },
-            
+
             renderContent: function() {
                 if (!this.state.isLoaded) {
-                    return "Loading weather for " + this.props.location + "...";
+                    return 'Loading weather for ' + this.props.location + '...';
                 }
-                
+
                 return D.div(
                     null,
                     D.div({
@@ -74,16 +68,16 @@ tau.mashups
                             marginBottom: '20px'
                         }
                     },
-                    this.state.temp + "°C"),
-                    
+                    this.state.temp + 'Â°C'),
+
                     D.div({
                         style: {
-                            fontSize: '32px', 
+                            fontSize: '32px',
                             marginBottom: '20px'
                         }
                     },
                     this.state.tempText),
-                    
+
                     D.div({
                         style: {
                             fontSize: '24px'
@@ -93,20 +87,20 @@ tau.mashups
                 );
             }
         });
-        
+
         var appConfigurator;
-        configurator.getGlobalBus().on('configurator.ready', makeCb(function(configurator) {
+        configurator.getGlobalBus().on('configurator.ready', function(evt, configurator) {
             if (!appConfigurator && configurator._id && configurator._id.match(/board/)) {
                 appConfigurator = configurator;
                 configurator.getDashboardWidgetTemplateRegistry().addWidgetTemplate({
                     id: 'tp_experimental_weather',
                     name: 'Weather',
                     description: 'Displays weather information',
-                    tags: ['Experimental'],
+                    tags: ['Mashups'],
                     insert: function(placeholder, settings) {
                         React.render(React.createElement(WeatherWidget), placeholder);
                     }
                 });
             }
-        }));
+        });
     });
